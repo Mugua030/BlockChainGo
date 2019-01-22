@@ -2,7 +2,6 @@ package main
 
 import (
 	"crypto/sha256"
-	"encoding/hex"
 	"fmt"
 )
 
@@ -12,17 +11,21 @@ type Block struct {
 	Data         []byte
 }
 
+var genesisBlock string = "genesisBlock begin"
+
 func NewBlock(data string, preBlock []byte) *Block {
 
 	block := Block{
-		PreBlockHash: preBlock,
-		Hash:         nil,
-		Data:         []byte(data),
+		PreBlockHash: preBlock,     //record pre block hashValue :: block info => to hash
+		Hash:         nil,          // current blockinfo hash
+		Data:         []byte(data), // infos: msg
 	}
 	block.SetHash()
 
 	return &block
 }
+
+//SetHash set current block hash
 func (b *Block) SetHash() {
 
 	var blockInfo []byte
@@ -34,13 +37,46 @@ func (b *Block) SetHash() {
 	b.Hash = hash[:]
 }
 
-func main() {
-	block := NewBlock("Love BlockChain", []byte{})
+//BlockChain  用户切片来当存储容器
+type BlockChain struct {
+	Blocks []*Block
+}
 
-	fmt.Printf("PreBlock: %s\n", block.PreBlockHash)
-	//fmt.Printf("Hash: %s\n", block.Hash)
-	encodeStr := hex.EncodeToString(block.Hash)
-	fmt.Printf("Hash: %s\n", encodeStr)
-	fmt.Printf("Data: %s\n", block.Data)
+//AddBlock 添加区块 hash= hash blockinfo
+func (bc *BlockChain) AddBlock(data string) {
+
+	len := len(bc.Blocks)
+	lastBlock := bc.Blocks[len-1]
+	newBlock := NewBlock(data, lastBlock.Hash)
+
+	bc.Blocks = append(bc.Blocks, newBlock)
+
+}
+
+func NewBlockChain() *BlockChain {
+
+	genesisBlock := NewBlock(genesisBlock, []byte{})
+
+	bc := BlockChain{
+		Blocks: []*Block{genesisBlock},
+	}
+
+	return &bc
+}
+
+func main() {
+
+	blockChain := NewBlockChain()
+	blockChain.AddBlock("love blockchain")
+	blockChain.AddBlock("bb block")
+
+	for _, b := range blockChain.Blocks {
+		//fmt.Printf("preBlock : %s\n", hex.EncodeToString(b.PreBlockHash))
+		//fmt.Printf("Hash : %s\n", hex.EncodeToString(b.Hash))
+		fmt.Printf("preBlockHash : %x\n", b.PreBlockHash)
+		fmt.Printf("Hash : %x\n", string(b.Hash))
+		fmt.Printf("Data: %s\n", string(b.Data))
+		fmt.Println()
+	}
 
 }
