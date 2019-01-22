@@ -1,13 +1,21 @@
 package main
 
 import (
+	"bytes"
 	"crypto/sha256"
+	"encoding/binary"
 	"fmt"
+	"time"
 )
 
 type Block struct {
+	Version      uint64
 	PreBlockHash []byte
 	Hash         []byte
+	MerkelRoot   []byte
+	TimeStamp    uint64
+	Bits         uint64 //难度值 difficultly
+	Nonce        uint64 //随机数
 	Data         []byte
 }
 
@@ -16,8 +24,13 @@ var genesisBlock string = "genesisBlock begin"
 func NewBlock(data string, preBlock []byte) *Block {
 
 	block := Block{
-		PreBlockHash: preBlock,     //record pre block hashValue :: block info => to hash
-		Hash:         nil,          // current blockinfo hash
+		Version:      0,
+		PreBlockHash: preBlock, //record pre block hashValue :: block info => to hash
+		Hash:         nil,      // current blockinfo hash
+		MerkelRoot:   nil,
+		TimeStamp:    uint64(time.Now().Unix()),
+		Bits:         0,
+		Nonce:        0,
 		Data:         []byte(data), // infos: msg
 	}
 	block.SetHash()
@@ -29,12 +42,27 @@ func NewBlock(data string, preBlock []byte) *Block {
 func (b *Block) SetHash() {
 
 	var blockInfo []byte
+	blockInfo = append(blockInfo, uint2bytes(b.Version)...)
 	blockInfo = append(blockInfo, b.PreBlockHash...)
 	blockInfo = append(blockInfo, b.Hash...)
+	blockInfo = append(blockInfo, b.MerkelRoot...)
+	blockInfo = append(blockInfo, uint2bytes(b.TimeStamp)...)
+	blockInfo = append(blockInfo, uint2bytes(b.Bits)...)
+	blockInfo = append(blockInfo, uint2bytes(b.Nonce)...)
 	blockInfo = append(blockInfo, b.Data...)
 
 	hash := sha256.Sum256(blockInfo)
 	b.Hash = hash[:]
+}
+func uint2bytes(num uint64) []byte {
+
+	var buffer bytes.Buffer
+	err := binary.Write(&buffer, binary.BigEndian, num)
+	if err != nil {
+		panic(err)
+	}
+
+	return buffer.Bytes()
 }
 
 //BlockChain  用户切片来当存储容器
