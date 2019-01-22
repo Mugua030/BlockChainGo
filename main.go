@@ -106,5 +106,6 @@ func main() {
 		fmt.Printf("Data: %s\n", string(b.Data))
 		fmt.Println()
 	}
+	//Todo:: 随机数  难度值 没有用上 2.hash没有规律
 
 }
