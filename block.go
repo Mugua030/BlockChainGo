@@ -6,6 +6,8 @@ import (
 	"time"
 )
 
+const BITS = 16
+
 type Block struct {
 	Version      uint64
 	PreBlockHash []byte
@@ -25,7 +27,7 @@ func NewBlock(data string, preBlock []byte) *Block {
 		Hash:         nil,      // current blockinfo hash
 		MerkelRoot:   nil,
 		TimeStamp:    uint64(time.Now().Unix()),
-		Bits:         0,
+		Bits:         BITS,
 		Nonce:        0,
 		Data:         []byte(data), // infos: msg
 	}

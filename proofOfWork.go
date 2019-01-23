@@ -15,15 +15,17 @@ type ProofOfWork struct {
 
 func NewProofOfWork(block Block) *ProofOfWork {
 
-	targetStr :=
-		"0001000000000000000000000000000000000000000000000000000000000000"
+	//	targetStr :=
+	//"0001000000000000000000000000000000000000000000000000000000000000"
 
-	bigIntTmp := big.Int{}
-	bigIntTmp.SetString(targetStr, 16)
+	//bigIntTmp := big.Int{}
+	//bigIntTmp.SetString(targetStr, 16)
+	bigIntTmp := big.NewInt(1)
+	bigIntTmp.Lsh(bigIntTmp, 256-BITS) // 返回一个指针
 
 	pow := ProofOfWork{
 		block:  block,
-		target: bigIntTmp,
+		target: *bigIntTmp,
 	}
 
 	return &pow
