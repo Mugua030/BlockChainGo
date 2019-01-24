@@ -38,7 +38,7 @@ func (p *ProofOfWork) Run() (uint64, []byte) {
 	var nonce uint64
 	var hash [32]byte
 	for {
-		fmt.Printf("%x\r", hash)
+		fmt.Printf("Run::  %x\r", hash)
 
 		//对拼接好的数据进行256hash
 		hash = sha256.Sum256(p.prepareData(nonce))
@@ -47,7 +47,8 @@ func (p *ProofOfWork) Run() (uint64, []byte) {
 		bigIntTmp.SetBytes(hash[:])
 
 		if bigIntTmp.Cmp(&p.target) == -1 {
-			fmt.Printf("挖矿成功, hash: %x, nonce: %d\n", hash, nonce)
+			fmt.Printf("挖矿成功, hash: %x, nonce: %d\n\r", hash, nonce)
+			fmt.Println()
 			break
 		} else {
 			nonce++

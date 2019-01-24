@@ -1,12 +1,13 @@
 package main
 
 import (
+	"bytes"
 	"crypto/sha256"
-	"fmt"
+	"encoding/gob"
 	"time"
 )
 
-const BITS = 16
+const BITS = 10
 
 type Block struct {
 	Version      uint64
@@ -55,6 +56,29 @@ func (b *Block) SetHash() {
 	blockInfo = append(blockInfo, b.Data...)
 
 	hash := sha256.Sum256(blockInfo)
-	fmt.Printf("%x", hash)
+	//fmt.Printf("%x", hash)
 	b.Hash = hash[:]
+}
+func (b *Block) toBytes() []byte {
+	return []byte("222222")
+}
+func (b *Block) Serialize() ([]byte, error) {
+	var buffer bytes.Buffer
+	encoder := gob.NewEncoder(&buffer)
+	err := encoder.Encode(b)
+	if err != nil {
+		return nil, err
+	}
+	return buffer.Bytes(), nil
+}
+
+func Deserialize(data []byte) (*Block, error) {
+	var block Block
+	decoder := gob.NewDecoder(bytes.NewReader(data))
+	err := decoder.Decode(&block)
+	if err != nil {
+		return nil, err
+	}
+
+	return &block, nil
 }
