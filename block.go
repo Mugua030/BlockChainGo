@@ -17,10 +17,11 @@ type Block struct {
 	TimeStamp    uint64
 	Bits         uint64 //难度值 difficultly
 	Nonce        uint64 //随机数
-	Data         []byte
+	//Data         []byte
+	Transactions []*Transaction
 }
 
-func NewBlock(data string, preBlock []byte) *Block {
+func NewBlock(txs []*Transaction, preBlock []byte) *Block {
 
 	block := Block{
 		Version:      0,
@@ -30,7 +31,8 @@ func NewBlock(data string, preBlock []byte) *Block {
 		TimeStamp:    uint64(time.Now().Unix()),
 		Bits:         BITS,
 		Nonce:        0,
-		Data:         []byte(data), // infos: msg
+		//Data:         []byte(data), // infos: msg
+		Transactions: txs,
 	}
 	//block.SetHash()
 	pow := NewProofOfWork(block)
@@ -53,7 +55,7 @@ func (b *Block) SetHash() {
 	blockInfo = append(blockInfo, uint2bytes(b.TimeStamp)...)
 	blockInfo = append(blockInfo, uint2bytes(b.Bits)...)
 	blockInfo = append(blockInfo, uint2bytes(b.Nonce)...)
-	blockInfo = append(blockInfo, b.Data...)
+	//blockInfo = append(blockInfo, b.Data...)
 
 	hash := sha256.Sum256(blockInfo)
 	//fmt.Printf("%x", hash)
@@ -62,14 +64,15 @@ func (b *Block) SetHash() {
 func (b *Block) toBytes() []byte {
 	return []byte("222222")
 }
-func (b *Block) Serialize() ([]byte, error) {
+func (b *Block) Serialize() []byte {
 	var buffer bytes.Buffer
 	encoder := gob.NewEncoder(&buffer)
 	err := encoder.Encode(b)
 	if err != nil {
-		return nil, err
+		//return nil
+		panic(err)
 	}
-	return buffer.Bytes(), nil
+	return buffer.Bytes()
 }
 
 func Deserialize(data []byte) (*Block, error) {

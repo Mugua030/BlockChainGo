@@ -77,7 +77,7 @@ func (p *ProofOfWork) prepareData(nonce uint64) []byte {
 		uint2bytes(b.TimeStamp),
 		uint2bytes(b.Bits),
 		uint2bytes(nonce),
-		b.Data,
+		//		b.Data,
 	}
 
 	//blockInfo = append(blockInfo, uint2bytes(b.Nonce)...)
